@@ -3,7 +3,13 @@
 
 # 工程目录
 ### SecurityAlgs/src/SymmetricEncry(对称加密)
+- DESCore 
+  DES算法的核心文件，进行DES一次加密解密操作，实现参考的博客包括[1](https://www.cnblogs.com/songwenlong/p/5944139.html)和[2](https://blog.csdn.net/qq_27570955/article/details/52442092)
+  ```java
+  //调用方法
+  ```
 - DES
+
 - AES
 ### SecurityAlgs/src/Asymmetricencry(非对称加密)
 - RSA
