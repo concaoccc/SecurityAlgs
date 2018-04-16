@@ -147,7 +147,21 @@ public class DESCore {
 	private byte[] encry(byte[] plaintext, byte[] key)
 	{
 		byte[] currentData = new byte[64];
-		//TODO 完成加密操作
+		byte[] currentKey = new byte[56];
+		//首先进行IP盒操作
+		currentData = getIPText(plaintext);
+		//将密钥减少到56位
+		currentKey = getPC1Text(key);
+		//得到当前的左右数据
+		byte[] currentLeftData = getLeftData(currentData);
+		byte[] currentRightData = getRightData(currentData);
+		//得到当前的左右密钥
+		byte[] currentLeftKey = getLeftData(currentKey);
+		byte[] currentRightKey = getRightData(currentKey);
+		//进行迭代运算16轮计算
+		for (int i = 0; i < 16; i++) {
+			//TODO 进行16轮迭代开发
+		}
 		return currentData;
 	}
 	
@@ -159,7 +173,7 @@ public class DESCore {
 		return currentData;
 	}
 	/*
-	 * 获取明文经过IP核之后的数据
+	 * 获取明文经过IP核之后的数据， 64的byte进，64byte出
 	 */
 	private byte[] getIPText(byte[] plaintext)
 	{
@@ -171,6 +185,43 @@ public class DESCore {
 		}
 		return dataBytes;
 	}
+	/*
+	 * 密钥经过PC1盒，64进，56出
+	 */
+	private byte[] getPC1Text(byte[] key)
+	{
+		int keyLength = 56;
+		byte[] keyBytes = new byte[keyLength];
+		for (int i = 0; i < keyLength; i++) {
+			keyBytes[i] = key[PC1[i]-1];
+		}
+		return keyBytes;
+	}
+	
+	/*
+	 * 返回数据的前半部分
+	 */
+	private byte[] getLeftData(byte[] data)
+	{
+		byte[] leftData = new byte[data.length/2];
+		for (int i = 0; i < data.length/2; i++) {
+			leftData[i] = data[i];
+		}
+		return leftData;
+	}
+	
+	/*
+	 * 返回数据的后半部分
+	 */
+	private byte[] getRightData(byte[] data)
+	{
+		byte[] rightData = new byte[data.length/2];
+		for (int i = 0; i < data.length/2; i++) {
+			rightData[i] = data[i+data.length/2];
+		}
+		return rightData;
+	}
+	//
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
