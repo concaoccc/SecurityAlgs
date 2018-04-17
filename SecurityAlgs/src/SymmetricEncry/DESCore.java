@@ -160,8 +160,32 @@ public class DESCore {
 		byte[] currentRightKey = getRightData(currentKey);
 		//进行迭代运算16轮计算
 		for (int i = 0; i < 16; i++) {
-			//TODO 进行16轮迭代开发
+			//TODO 进行16轮迭代计算
+			//进行循环以为操作，向左为正
+			currentLeftKey = shift(currentLeftKey,encryMove[i-1] , 1);
+			currentRightKey = shift(currentRightKey,encryMove[i-1] , 1);
+			//将左右数据进行合并
+			byte[] usingKey = mergeKey(currentLeftKey, currentRightKey);
+			//后一次的left直接为前一次的right
+			byte[] nextLeftData = currentRightData;
+			//将32位数据拓展到48位
+			byte[] expandData = expand(currentRightData);
+			//与秘钥进行异或
+			expandData = XOR(expandData, usingKey);
+			//S盒选择
+			byte[] tmpData = select(expandData);
+			//P置换
+			tmpData = p_change(tmpData);
+			//最后进行异或得到最后的右部
+			byte[] nextRightData = XOR(currentLeftData,tmpData);
+			//跟新到下一层
+			currentLeftData = nextLeftData;
+			currentRightData = nextRightData;
 		}
+		//将左右部分合并
+		currentData = mergeData(currentLeftData, currentRightData);
+		//进行IP核的逆运算
+		currentData = invIPChange(currentData);
 		return currentData;
 	}
 	
@@ -220,6 +244,88 @@ public class DESCore {
 			rightData[i] = data[i+data.length/2];
 		}
 		return rightData;
+	}
+	
+	/*
+	 * 进行秘钥轮换
+	 * primaryData: 原始数据
+	 * step:移动的步长
+	 * direction:移动的方向,1为左，-1为右
+	 */
+	private byte[] shift(byte[] primaryData, int step, int direction)
+	{
+		byte[] result = new byte[primaryData.length];
+		//TODO 具体循环移位的细节
+		return result;
+		
+	}
+	
+	/*
+	 * 进行合并秘钥并选取其中的48位
+	 * 
+	 */
+	private byte[] mergeKey(byte[] leftKey, byte[] rightKey)
+	{
+		//保存合并结果
+		byte[] mergingKey = new byte[56];
+		//保存对合并结果的抽取，返回48位
+		byte[] usingKey = new byte[48];
+		return usingKey;
+	}
+	/*
+	 * 使用E盒对右边数据进行拓展
+	 */
+	private byte[] expand(byte[] primaryData)
+	{
+		byte[] expanded = new byte[48];
+		return expanded;
+	}
+	
+	/*
+	 * 进行异或操作
+	 */
+	private byte[] XOR(byte[] data1, byte[] data2)
+	{
+		byte[] result = new byte[data1.length];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = (byte) (data1[i]^data2[i]);
+		}
+		return result;
+	}
+	/*
+	 * 进行S盒的选择
+	 * 输入为48位
+	 * 输出为32位
+	 */
+	private byte[] select(byte[] data)
+	{
+		byte[] result = new byte[32];
+		return result;
+	}
+	
+	/*
+	 * 进行P盒置换
+	 */
+	private byte[] p_change(byte[] data)
+	{
+		byte[] result = new byte[data.length];
+		return result;
+	}
+	/*
+	 * 进行左右端数据合并
+	 */
+	private byte[] mergeData(byte[]data1, byte[]data2)
+	{
+		byte[] result = new byte[data1.length+data2.length];
+		return result;
+	}
+	/*
+	 * 进行IP核的逆运算
+	 */
+	private byte[] invIPChange(byte[] data)
+	{
+		byte[] result = new byte[data.length];
+		return result;
 	}
 	//
 	public static void main(String[] args) {
