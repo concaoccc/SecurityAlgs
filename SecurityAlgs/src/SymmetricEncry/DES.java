@@ -2,7 +2,6 @@ package SymmetricEncry;
 
 //DES功能实现
 public class DES {
-
 	/**
 	 * @param args
 	 */
