@@ -1,7 +1,7 @@
 package SymmetricEncry;
 
 //DES的核心程序，只完成加密和解密操作
-public class DESCore {
+class DESCore {
 	//保存加解密的结果
 	private byte[] result;
 	/*
@@ -63,6 +63,17 @@ public class DESCore {
 		0,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1
 	};
 	
+	//秘钥从56变成48
+	public static int[] PC2={
+		14,17,11,24,1,5,  
+		3,28,15,6,21,10,  
+		23,19,12,4,26,8,  
+		16,7,27,20,13,2,  
+		41,52,31,37,47,55,  
+		30,40,51,45,33,48,  
+		44,49,39,56,34,53,  
+		46,42,50,36,29,32
+	};
 	//E核拓展,将32位拓展成64位
 	public static int[] E={
 		32,1,2,3,4,5,  
@@ -162,8 +173,8 @@ public class DESCore {
 		for (int i = 0; i < 16; i++) {
 			//TODO 进行16轮迭代计算
 			//进行循环以为操作，向左为正
-			currentLeftKey = shift(currentLeftKey,encryMove[i-1] , 1);
-			currentRightKey = shift(currentRightKey,encryMove[i-1] , 1);
+			currentLeftKey = shift(currentLeftKey,encryMove[i] , 1);
+			currentRightKey = shift(currentRightKey,encryMove[i] , 1);
 			//将左右数据进行合并
 			byte[] usingKey = mergeKey(currentLeftKey, currentRightKey);
 			//后一次的left直接为前一次的right
@@ -255,29 +266,55 @@ public class DESCore {
 	private byte[] shift(byte[] primaryData, int step, int direction)
 	{
 		byte[] result = new byte[primaryData.length];
-		//TODO 具体循环移位的细节
+		if(direction>0)
+		{
+			//循环左移
+			for (int i = 0; i < result.length; i++) {
+				result[i] = primaryData[(i-step+primaryData.length)%primaryData.length];
+			}
+		}
+		else {
+			//循环右移
+			for (int i = 0; i < result.length; i++) {
+				result[i] = primaryData[(i+step)%primaryData.length];
+			}
+		}
 		return result;
 		
 	}
 	
 	/*
 	 * 进行合并秘钥并选取其中的48位
-	 * 
 	 */
 	private byte[] mergeKey(byte[] leftKey, byte[] rightKey)
 	{
 		//保存合并结果
 		byte[] mergingKey = new byte[56];
+		//进行合并
+		for (int i = 0; i < leftKey.length; i++) {
+			mergingKey[i] = leftKey[i];
+		}
+		for (int i = 0; i < rightKey.length; i++) {
+			mergingKey[i+28] = rightKey[i];
+		}
 		//保存对合并结果的抽取，返回48位
 		byte[] usingKey = new byte[48];
+		//进行抽取,使用PC2
+		for (int i = 0; i < usingKey.length; i++) {
+			usingKey[i] = mergingKey[PC2[i]-1];
+		}
 		return usingKey;
 	}
+	
 	/*
 	 * 使用E盒对右边数据进行拓展
 	 */
 	private byte[] expand(byte[] primaryData)
 	{
 		byte[] expanded = new byte[48];
+		for (int i = 0; i < expanded.length; i++) {
+			expanded[i] = primaryData[E[i]-1];
+		}
 		return expanded;
 	}
 	
@@ -300,15 +337,84 @@ public class DESCore {
 	private byte[] select(byte[] data)
 	{
 		byte[] result = new byte[32];
+		//前6个使用第一个沙盒,因为S1 S2等的名字，不知道应该怎么使用循环
+		int order =0;
+		int row = data[0+order*6]*2+data[5+order*6];
+		int col = data[1+order*6]*8+data[2+order*6]*4+data[3+order*6]*2+data[4+order*6];
+		int tmp = S1[row][col];
+		for (int i = 0; i < 4; i++) {
+			result[i+order*4] = (byte) (tmp&1);
+			tmp = tmp>>1;
+		}
+		order =1;
+		row = data[0+order*6]*2+data[5+order*6];
+		col = data[1+order*6]*8+data[2+order*6]*4+data[3+order*6]*2+data[4+order*6];
+		tmp = S2[row][col];
+		for (int i = 0; i < 4; i++) {
+			result[i+order*4] = (byte) (tmp&1);
+			tmp = tmp>>1;
+		}
+		order =2;
+		row = data[0+order*6]*2+data[5+order*6];
+		col = data[1+order*6]*8+data[2+order*6]*4+data[3+order*6]*2+data[4+order*6];
+		tmp = S3[row][col];
+		for (int i = 0; i < 4; i++) {
+			result[i+order*4] = (byte) (tmp&1);
+			tmp = tmp>>1;
+		}
+		order =3;
+		row = data[0+order*6]*2+data[5+order*6];
+		col = data[1+order*6]*8+data[2+order*6]*4+data[3+order*6]*2+data[4+order*6];
+		tmp = S4[row][col];
+		for (int i = 0; i < 4; i++) {
+			result[i+order*4] = (byte) (tmp&1);
+			tmp = tmp>>1;
+		}
+		order =4;
+		row = data[0+order*6]*2+data[5+order*6];
+		col = data[1+order*6]*8+data[2+order*6]*4+data[3+order*6]*2+data[4+order*6];
+		tmp = S5[row][col];
+		for (int i = 0; i < 4; i++) {
+			result[i+order*4] = (byte) (tmp&1);
+			tmp = tmp>>1;
+		}
+		order =5;
+		row = data[0+order*6]*2+data[5+order*6];
+		col = data[1+order*6]*8+data[2+order*6]*4+data[3+order*6]*2+data[4+order*6];
+		tmp = S6[row][col];
+		for (int i = 0; i < 4; i++) {
+			result[i+order*4] = (byte) (tmp&1);
+			tmp = tmp>>1;
+		}
+		order =6;
+		row = data[0+order*6]*2+data[5+order*6];
+		col = data[1+order*6]*8+data[2+order*6]*4+data[3+order*6]*2+data[4+order*6];
+		tmp = S7[row][col];
+		for (int i = 0; i < 4; i++) {
+			result[i+order*4] = (byte) (tmp&1);
+			tmp = tmp>>1;
+		}
+		order =7;
+		row = data[0+order*6]*2+data[5+order*6];
+		col = data[1+order*6]*8+data[2+order*6]*4+data[3+order*6]*2+data[4+order*6];
+		tmp = S8[row][col];
+		for (int i = 0; i < 4; i++) {
+			result[i+order*4] = (byte) (tmp&1);
+			tmp = tmp>>1;
+		}
 		return result;
 	}
 	
 	/*
 	 * 进行P盒置换
+	 * 32进，32出
 	 */
 	private byte[] p_change(byte[] data)
 	{
 		byte[] result = new byte[data.length];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = data[P[i]-1];
+		}
 		return result;
 	}
 	/*
@@ -317,6 +423,12 @@ public class DESCore {
 	private byte[] mergeData(byte[]data1, byte[]data2)
 	{
 		byte[] result = new byte[data1.length+data2.length];
+		for (int i = 0; i < data1.length; i++) {
+			result[i] = data1[i];
+		}
+		for (int i = 0; i < data2.length; i++) {
+			result[i+data1.length] = data2[i];
+		}
 		return result;
 	}
 	/*
@@ -325,11 +437,9 @@ public class DESCore {
 	private byte[] invIPChange(byte[] data)
 	{
 		byte[] result = new byte[data.length];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = data[invIP[i]-1];
+		}
 		return result;
-	}
-	//
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 	}
 }
