@@ -157,6 +157,7 @@ class DESCore {
 	//加密操作
 	private byte[] encry(byte[] plaintext, byte[] key)
 	{
+//		System.out.println("开始加密过程：");
 		byte[] currentData = new byte[64];
 		byte[] currentKey = new byte[56];
 		//首先进行IP盒操作
@@ -173,10 +174,24 @@ class DESCore {
 		for (int i = 0; i < 16; i++) {
 			//TODO 进行16轮迭代计算
 			//进行循环以为操作，向左为正
+//			System.out.printf("开始第%d轮加密：\n", i+1);
+//			System.out.println("本轮输入：");
+//			for (int j = 0; j < currentLeftData.length; j++) {
+//				System.out.printf(" %d", currentLeftData[j]);
+//			}
+//			for (int j = 0; j < currentRightData.length; j++) {
+//				System.out.printf(" %d", currentRightData[j]);
+//			}
+//			System.out.println();
 			currentLeftKey = shift(currentLeftKey,encryMove[i] , 1);
 			currentRightKey = shift(currentRightKey,encryMove[i] , 1);
 			//将左右数据进行合并
 			byte[] usingKey = mergeKey(currentLeftKey, currentRightKey);
+//			System.out.println("本轮秘钥：");
+//			for (int j = 0; j < usingKey.length; j++) {
+//				System.out.printf(" %d", usingKey[j]);
+//			}
+//			System.out.println();
 			//后一次的left直接为前一次的right
 			byte[] nextLeftData = currentRightData;
 			//将32位数据拓展到48位
@@ -192,6 +207,14 @@ class DESCore {
 			//跟新到下一层
 			currentLeftData = nextLeftData;
 			currentRightData = nextRightData;
+//			System.out.println("本轮输出：");
+//			for (int j = 0; j < currentLeftData.length; j++) {
+//				System.out.printf(" %d", currentLeftData[j]);
+//			}
+//			for (int j = 0; j < currentRightData.length; j++) {
+//				System.out.printf(" %d", currentRightData[j]);
+//			}
+//			System.out.println();
 		}
 		//将左右部分合并
 		currentData = mergeData(currentLeftData, currentRightData);
@@ -203,8 +226,71 @@ class DESCore {
 	//解密操作
 	private byte[] decry(byte[] encrytext, byte[] key)
 	{
+//		byte[] currentData = new byte[64];
+//		//TODO 完成解密操作
+//		return currentData;
 		byte[] currentData = new byte[64];
-		//TODO 完成解密操作
+		byte[] currentKey = new byte[56];
+		//首先进行IP盒操作
+		currentData = getIPText(encrytext);
+		//将密钥减少到56位
+		currentKey = getPC1Text(key);
+		//得到当前的左右数据
+		byte[] currentLeftData = getLeftData(currentData);
+		byte[] currentRightData = getRightData(currentData);
+		//得到当前的左右密钥
+		byte[] currentLeftKey = getLeftData(currentKey);
+		byte[] currentRightKey = getRightData(currentKey);
+		//进行迭代运算16轮计算
+		for (int i = 0; i < 16; i++) {
+			//TODO 进行16轮迭代计算
+			//进行循环以为操作，向左为正
+//			System.out.printf("开始第%d轮解密：\n", i+1);
+//			System.out.println("本轮输入：");
+//			for (int j = 0; j < currentLeftData.length; j++) {
+//				System.out.printf(" %d", currentLeftData[j]);
+//			}
+//			for (int j = 0; j < currentRightData.length; j++) {
+//				System.out.printf(" %d", currentRightData[j]);
+//			}
+//			System.out.println();
+			currentLeftKey = shift(currentLeftKey,decryMove[i] , -1);
+			currentRightKey = shift(currentRightKey,decryMove[i] , -1);
+			//将左右数据进行合并
+			byte[] usingKey = mergeKey(currentLeftKey, currentRightKey);
+			//后一次的left直接为前一次的right
+			byte[] nextRightData = currentLeftData;
+//			System.out.println("本轮秘钥：");
+//			for (int j = 0; j < usingKey.length; j++) {
+//				System.out.printf(" %d", usingKey[j]);
+//			}
+//			System.out.println();
+			//将32位数据拓展到48位
+			byte[] expandData = expand(currentLeftData);
+			//与秘钥进行异或
+			expandData = XOR(expandData, usingKey);
+			//S盒选择
+			byte[] tmpData = select(expandData);
+			//P置换
+			tmpData = p_change(tmpData);
+			//最后进行异或得到最后的右部
+			byte[] nextLeftData = XOR(currentRightData,tmpData);
+			//跟新到下一层
+			currentLeftData = nextLeftData;
+			currentRightData = nextRightData;
+//			System.out.println("本轮输出：");
+//			for (int j = 0; j < currentLeftData.length; j++) {
+//				System.out.printf(" %d", currentLeftData[j]);
+//			}
+//			for (int j = 0; j < currentRightData.length; j++) {
+//				System.out.printf(" %d", currentRightData[j]);
+//			}
+//			System.out.println();
+		}
+		//将左右部分合并
+		currentData = mergeData(currentLeftData, currentRightData);
+		//进行IP核的逆运算
+		currentData = invIPChange(currentData);
 		return currentData;
 	}
 	/*
