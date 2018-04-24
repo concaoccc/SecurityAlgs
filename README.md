@@ -6,8 +6,16 @@
 - DESCore.java 
   DES算法的核心文件，进行DES一次加密解密操作，实现参考的博客包括[1](https://www.cnblogs.com/songwenlong/p/5944139.html)和[2](https://blog.csdn.net/qq_27570955/article/details/52442092)
   ```java
-  //调用方法
+  //加密调用方法
+  //data和key为byte[64]
+  DESCore desEncryTest = new DESCore(data,key,"encry");
+	byte[] encryresult = desEncryTest.getResult();
+  //解密调用方法
+  DESCore desDecryTest = new DESCore(encryresult, key, "decry"); 
+	byte[] decryResult = desDecryTest.getResult();
   ```
+- DESCoreTest.java
+  对DESCore.java进行测试，随机生成一组key和data,观察加解密后数据和原始数据是否相同
 - DES.java
 
 - AES.java
