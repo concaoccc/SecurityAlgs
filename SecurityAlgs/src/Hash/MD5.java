@@ -1,13 +1,25 @@
 package Hash;
 
 public class MD5{
-    /*
-    *四个链接变量
-    */
-    private final int A=0x67452301;
+	//四个初始变量
+	private final int A=0x67452301;
     private final int B=0xefcdab89;
     private final int C=0x98badcfe;
     private final int D=0x10325476;
+    //保存当前的A/B/C/D
+    private int currentA;
+    private int currentB;
+    private int currentC;
+    private int currentD;
+    
+    //初始化构造函数
+    public MD5() {
+		// TODO Auto-generated constructor stub
+    	currentA = A;
+    	currentB = B;
+    	currentC = C;
+    	currentD = D;
+	}
     /*
      * 原始的K
      */
@@ -32,125 +44,96 @@ public class MD5{
          12,17,22,5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,
          4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,6,10,
          15,21,6,10,15,21,6,10,15,21,6,10,15,21};
-    /*
-    *保存当前的A/B/C/D
-    */
-    private int currentA,currentB,currentC,currentD;
-    
-    //构造函数
-    private void init(){
-    	currentA = A;
-    	currentB = B;
-    	currentC = C;
-    	currentD = D;
-    }
-    /*
-    *移动一定位数
-    */
-    private int shift(int a,int s){
-        return(a<<s)|(a>>>(32-s));//右移的时候，高位一定要补零，而不是补充符号位
-    }
-    /*
-    *主循环
-    */
-    private void MainLoop(int M[]){
-        int F,g;
-        int a = currentA;
-        int b = currentB;
-        int c = currentC;
-        int d = currentD;
-        //全部需要循环64轮
-        for(int i = 0; i < 64; i ++){
-            if(i<16){
-                F=(b&c)|((~b)&d);
-                g=i;
-            }else if(i<32){
-                F=(d&b)|((~d)&c);
-                g=(5*i+1)%16;
-            }else if(i<48){
-                F=b^c^d;
-                g=(3*i+5)%16;
-            }else{
-                F=c^(b|(~d));
-                g=(7*i)%16;
-            }
-            int tmp=d;
-            d=c;
-            c=b;
-            b=b+shift(a+F+K[i]+M[g],s[i]);
-            a=tmp;
-        }
-        currentA += a;
-        currentB += b;
-        currentC += c;
-        currentD += d;
      
+    public byte[] getMD5(byte[] source)
+    {
+    	int strByte[] = add(new String(source));
+    	for(int i=0;i<strByte.length/16;i++){
+            int num[]=new int[16];
+            for(int j=0;j<16;j++){
+                num[j]=strByte[i*16+j];
+            }
+            MainLoop(num);
+         }
+    	String resultString = changeHex(currentA)+changeHex(currentB)+changeHex(currentC)+changeHex(currentD);
+    	return resultString.getBytes();
     }
-    /*
-    *填充函数
-    *处理后应满足bits≡448(mod512),字节就是bytes≡56（mode64)
-    *填充方式为先加一个0,其它位补零
-    *最后加上64位的原来长度
-    */
+    
+    //填充函数
     private int[] add(String str){
-        int num=((str.length()+8)/64)+1;//以512位，64个字节为一组
-        int strByte[]=new int[num*16];//64/4=16，所以有16个整数
-        for(int i=0;i<num*16;i++){//全部初始化0
+    	//以512位，64个字节为一组，8字节表示数组长度
+        int num=((str.length()+8)/64)+1;
+      //64/4=16，所以有16个整数
+        int strByte[]=new int[num*16];
+        for(int i=0;i<num*16;i++){
             strByte[i]=0;
         }
-        int    i;
+        int i;
         for(i=0;i<str.length();i++){
             strByte[i>>2]|=str.charAt(i)<<((i%4)*8);//一个整数存储四个字节，小端序
         }
         strByte[i>>2]|=0x80<<((i%4)*8);//尾部添加1
-        /*
-        *添加原长度，长度指位的长度，所以要乘8，然后是小端序，所以放在倒数第二个,这里长度只用了32位
-        */
+        //加上原数组的长度
         strByte[num*16-2]=str.length()*8;
-            return strByte;
+        return strByte;
     }
+    
     /*
-    *调用函数
-    */
-    public String getMD5(String source){
-        init();
-        int strByte[]=add(source);
-        for(int i=0;i<strByte.length/16;i++){
-        int num[]=new int[16];
-        for(int j=0;j<16;j++){
-            num[j]=strByte[i*16+j];
-        }
-        MainLoop(num);
-        }
-        return changeHex(currentA)+changeHex(currentB)+changeHex(currentC)+changeHex(currentD);
-     
-    }
-    /*
-    *整数变成16进制字符串
-    */
-    private String changeHex(int a){
-        String str="";
-        for(int i=0;i<4;i++){
-            str+=String.format("%2s", Integer.toHexString(((a>>i*8)%(1<<8))&0xff)).replace(' ', '0');
- 
-        }
-        return str;
-    }
-    /*
-    *单例
-    */
-    private static MD5 instance;
-    public static MD5 getInstance(){
-        if(instance==null){
-            instance=new MD5();
-        }
-        return instance;
-    }
-     
-    private MD5(){};
-     
+     *移动一定位数
+     */
+     private int shift(int a,int s){
+         return(a<<s)|(a>>>(32-s));//右移的时候，高位一定要补零，而不是补充符号位
+     }
+     /*
+      *整数变成16进制字符串
+      */
+      private String changeHex(int a){
+          String str="";
+          for(int i=0;i<4;i++){
+              str+=String.format("%2s", Integer.toHexString(((a>>i*8)%(1<<8))&0xff)).replace(' ', '0');
+   
+          }
+          return str;
+      }
+     /*
+     *主循环
+     */
+     private void MainLoop(int M[]){
+         int F,g;
+         int a = currentA;
+         int b = currentB;
+         int c = currentC;
+         int d = currentD;
+         //全部需要循环64轮
+         for(int i = 0; i < 64; i ++){
+             if(i<16){
+                 F=(b&c)|((~b)&d);
+                 g=i;
+             }else if(i<32){
+                 F=(d&b)|((~d)&c);
+                 g=(5*i+1)%16;
+             }else if(i<48){
+                 F=b^c^d;
+                 g=(3*i+5)%16;
+             }else{
+                 F=c^(b|(~d));
+                 g=(7*i)%16;
+             }
+             int tmp=d;
+             d=c;
+             c=b;
+             b=b+shift(a+F+K[i]+M[g],s[i]);
+             a=tmp;
+         }
+         currentA += a;
+         currentB += b;
+         currentC += c;
+         currentD += d;
+      
+     }
     public static void main(String[] args){
-        String str=MD5.getInstance().getMD5("");
-        System.out.println(str);
+    	MD5 md5Test = new MD5();
+    	byte[] result = md5Test.getMD5(".".getBytes());
+    	System.out.println(new String(result));
     }
 }
