@@ -1,7 +1,7 @@
 package SymmetricEncry;
 
 //DES的核心程序，只完成加密和解密操作
-class DESCore {
+public class DESCore {
 	//保存加解密的结果
 	private byte[] result;
 	/*

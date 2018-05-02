@@ -1,4 +1,7 @@
-package SymmetricEncry;
+package Test;
+
+import SymmetricEncry.DESCore;
+
 //对DESCore的核心加解密进行测试
 //将实际计算结果与Java自带的DES库进行比较
 public class DESCoreTest {
