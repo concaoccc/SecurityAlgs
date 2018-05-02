@@ -1,17 +1,25 @@
 package Hash;
-import java.util.Scanner;
 
 public class SHA {
-
-    public static int messLength = 0;
-    public static String convertToBinary(String word) {
-
-        byte[] bytes = word.getBytes();
-        StringBuilder binary = new StringBuilder();
+	
+	byte[] result;
+    public SHA(byte[] bytes) {
+		// TODO Auto-generated constructor stub
+    	String data = changeByteToString(bytes);
+    	calculateMod(new String(bytes), data);
+	}
+    
+    public byte[] getSHA()
+    {
+    	return result;
+    }
+	private String changeByteToString(byte[] bytes)
+    {
+    	StringBuilder binary = new StringBuilder();
 
         for (byte b : bytes) {
             int val = b;
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < 8; i++) {	
                 binary.append((val & 128) == 0 ? 0 : 1);
                 val <<= 1;
             }
@@ -19,14 +27,12 @@ public class SHA {
         }
 
         return binary.toString();
-
     }
 
-    public static void calculateMod(String word, String binary) {
+    public  void calculateMod(String word, String binary) {
 
         int binaryMessageLength = word.length() * 8 - 8; //the -8 will be taken into account below.
         String endBitLength = calculateMessageLength(binaryMessageLength+8); //add back 8 for accuracy
-        int subMod = endBitLength.length();
         int temp = (binaryMessageLength) % 512;
 
         if (432 - temp < 0) {
@@ -43,7 +49,7 @@ public class SHA {
 
     }
 
-    public static String calculateMessageLength(int bitLength) {
+    public  String calculateMessageLength(int bitLength) {
 
         String tempBitsLength = Integer.toBinaryString(bitLength);
         StringBuilder sb = new StringBuilder(tempBitsLength);
@@ -59,7 +65,7 @@ public class SHA {
     }
 
     //create complete message
-    public static String createMessageLength(String message, String paddedOne, int zeros, String endLength) {
+    public  String createMessageLength(String message, String paddedOne, int zeros, String endLength) {
 
         StringBuilder messageBinary = new StringBuilder(message);
         messageBinary.insert(messageBinary.toString().length(), paddedOne);
@@ -79,7 +85,6 @@ public class SHA {
             if(m.charAt(i) == '1'){
                 mArray[i/32] |= 0X80000000;
             }
-            System.out.printf("Decimal(iterator), String(Binary), Hex values of input: %d %s %x\n", i, m.substring(i, i+32),mArray[i/32]);
         }
 
         hash(mArray);
@@ -87,7 +92,7 @@ public class SHA {
 
     }
 
-    public static String printMessage(String message) {
+    public  String printMessage(String message) {
 
         StringBuilder sb = new StringBuilder(message);
         int num = message.length();
@@ -103,10 +108,9 @@ public class SHA {
 
     }
 
-    private static int leftrotate(int x, int shift) { //leftrotate function
+    private static int leftrotate(int x, int shift) { 
 
-        return ((x << shift) | (x >>> (32 - shift)));  //>>> is an UNSIGNED shift compared >> which is not
-
+        return ((x << shift) | (x >>> (32 - shift)));  
     }
 
     //instance variables
@@ -121,9 +125,7 @@ public class SHA {
     private static int k4 = 0xCA62C1D6;
 
 
-    private static String hash(int[] z) {
-
-        //Extend the sixteen 32-bit words into eighty 32-bit words
+    private String hash(int[] z) {
         int integer_count = z.length;
         int[] intArray = new int[80];
         int j = 0;
@@ -134,17 +136,13 @@ public class SHA {
             for ( j = 16; j <= 79; j++ ) {
                 intArray[j] = leftrotate(intArray[j - 3] ^ intArray[j - 8] ^ intArray[j - 14] ^ intArray[j - 16], 1);
             }
-
-            //  calculate A,B,C,D,E:
             int A = h1;
             int B = h2;
             int C = h3;
             int D = h4;
             int E = h5;
-            int t = 0; //temp
-
+            int t = 0; 
             for ( int x = 0; x <= 19; x++ ) {
-                //temp = leftrotate(a leftrotate 5) + f(t) + e + w[i] + k
                 t = leftrotate(A,5)+((B&C)|((~B)&D))+E+intArray[x]+k1;
                 E=D; D=C; C=leftrotate(B,30); B=A; A=t;
             }
@@ -170,9 +168,6 @@ public class SHA {
         String h3Length = Integer.toHexString(h3);
         String h4Length = Integer.toHexString(h4);
         String h5Length = Integer.toHexString(h5);
-        //System.out.println(h1Length.length());
-
-        //Integer.toHexString does not include extra leading 0's
         if(h1Length.length() < 8) {
             StringBuilder h1L = new StringBuilder(h1Length);
             h1L.insert(0,0);
@@ -197,22 +192,7 @@ public class SHA {
 
         //最后的hash结果
         String hh = h1Length + h2Length + h3Length + h4Length + h5Length;
-        System.out.println("Result: " + hh);
-
+        result = hh.getBytes();
         return null;
-    }
-    public static void main(String[] args) {
-
-        //Getting the word
-        System.out.println("Insert a word a phrase to be hashed");
-        Scanner sc = new Scanner(System.in);
-        String word = sc.nextLine();
-        System.out.println("Plain Text: " + word);
-
-        //Converting the word to binary
-        String binary = convertToBinary(word);
-        messLength = binary.length();
-        calculateMod(word, binary);
-
     }
 }
