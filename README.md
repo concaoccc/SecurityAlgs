@@ -4,32 +4,32 @@
 # 工程目录
 ```
 .
-+-- README.md                             % 当前文档
-+-- LICENCE                               % MIT协议
-+-- SecurityAlgs                          %工程源码
++-- README.md                                                             % 当前文档
++-- LICENCE                                                               
++-- SecurityAlgs                         
 |   +-- .settings
 |   +-- .classpath
 |   +-- .project
 |   +-- src
-|       +-- Asymmetricencry
-|            +-- RSA.java                 
-|       +-- Hash
-|            +-- MD5.java                 
+|       +-- Asymmetricencry                                               % 非对称加密
+|            +-- RSA.java                
+|       +-- Hash                                                          % 摘要
+|            +-- MD5.java                 
 |            +-- SHA.java                
-|       +-- SymmetricEncry
-|           +-- AES.java                  
-|           +-- DES.java                  
+|       +-- SymmetricEncry                                                % 对称加密
+|           +-- AES.java                  
+|           +-- DES.java                  
 |           +-- DESCore.java              
 |           +-- util.java
-|       +-- Test
-|           +-- AESTest.java
+|       +-- Test%                                                         % 测试
+|           +-- AESTest.java
 |           +-- DESCoreTest.java
 |           +-- DESTest.java
 |           +-- MD5Test.java
 |           +-- SHATest.java
 |           +-- RSATest.java
 +-- homework requirement
-|   +-- homework.pdf                      % 作业要求
+|   +-- homework.pdf                                                      % 作业要求
 ```
 # 核心代码说明
 ### SymmetricEncry(对称加密)
