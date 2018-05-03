@@ -17,7 +17,15 @@
 - DESCoreTest.java
   对DESCore.java进行测试，随机生成一组key和data,观察加解密后数据和原始数据是否相同
 - DES.java
-
+对DESCore进行包装
+```java
+//加密方法调用
+DES desTest = new DES();
+//64位的数据
+byte[] data = new byte[8];
+//64位的数据
+byte[] key = new byte[8];
+```
 - AES.java
 ### SecurityAlgs/src/Asymmetricencry(非对称加密)
 - RSA.java
