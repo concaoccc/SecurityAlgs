@@ -62,3 +62,65 @@ SHA-1算法实现，对于任意长度的string生成长度位20*8bit的摘要
 任意生成一组数据，观察自己代码和java自带库中生成的摘要结果是否相同
 - RSATest.java
 任意生成一组数据，利用RSA进行加密和解密操作
+# 密码学算法API
+- DES
+```java
+DES desTest = new DES();
+//需要加密数据
+byte[] data = new byte[8];
+//密钥
+byte[] key = new byte[8];
+//加密
+byte[] encrytext = desTest.encry(data, key);
+//解密
+byte[] result = desTest.decry(encrytext, key);
+```
+- AES
+```java
+//密钥
+byte[] key = new byte[16];
+//原始数据
+byte[] data = new byte[16];
+AES test = new AES(key);
+//加密
+byte[] entryText = test.encrypt(data);
+//解密
+byte[] result = test.decrypt(entryText);
+```
+- RSA
+```java
+//生成N位的随机数
+int N = 500;
+RSA key = new RSA(N);
+//数据
+byte[] data = new byte[40];
+//加密
+byte[] encrypt = key.encrypt(data);
+//解密		      
+byte[] decrypt = key.decrypt(encrypt);
+```
+- MD5
+```java
+//随机生成的数据
+byte[] data = new byte[160];
+StringBuilder dataChangeBuilder = new StringBuilder() ;
+//转换成字符串
+for(byte b : data){
+    int bt = b&0xff;
+    if(bt<16){
+    	dataChangeBuilder.append(0);
+    }
+    dataChangeBuilder.append(Integer.toHexString(bt));
+}
+MD5 md5Test = new MD5();
+//得到MD5
+byte[] result = md5Test.getMD5(dataChangeBuilder.toString().getBytes());
+```
+- SHA-1 
+```JAVA
+//本地版本只能对string转化的byte进行计算sha
+String data = "hello";
+SHA sha = new SHA(data.getBytes());
+//得到计算结果
+byte[] result = sha.getSHA();
+```
