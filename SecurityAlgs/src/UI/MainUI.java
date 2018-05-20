@@ -2,26 +2,15 @@ package UI;
 
 import java.awt.EventQueue;
 
-import javax.management.RuntimeErrorException;
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
-import java.awt.GridBagLayout;
 import javax.swing.JTextArea;
-import java.awt.GridBagConstraints;
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import java.awt.Component;
-import javax.swing.Box;
-import javax.swing.JScrollBar;
 import java.awt.Font;
 import javax.swing.JRadioButton;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.UIManager;
-
-import java.awt.GridLayout;
-import java.awt.Insets;
 import javax.swing.border.BevelBorder;
-import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -33,7 +22,10 @@ public class MainUI {
 
 	private JFrame frame;
 	private JTextField keyValue;
-
+	//保存对称加密算法
+	public String symAlgs = "DES";
+	public String symmode = "CBC";
+	public String shaAlgs = "SHA-1";
 	/**
 	 * Launch the application.
 	 */
@@ -93,15 +85,36 @@ public class MainUI {
 		setting.add(lblNewLabel_2);		
 		//DES和AES的选择
 		//DES
-		JRadioButton rdbtnDes = new JRadioButton("DES");
+		JRadioButton rdbtnDes = new JRadioButton("DES", true);
 		rdbtnDes.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnDes.setBounds(10, 76, 52, 23);
 		setting.add(rdbtnDes);
 		//AES
-		JRadioButton rdbtnAes = new JRadioButton("AES");
+		JRadioButton rdbtnAes = new JRadioButton("AES", false);
 		rdbtnAes.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnAes.setBounds(91, 76, 52, 23);
 		setting.add(rdbtnAes);
+		//加入到一个按钮组
+		ButtonGroup SymmetricAlgs = new ButtonGroup();
+		SymmetricAlgs.add(rdbtnDes);
+		SymmetricAlgs.add(rdbtnAes);
+		//增加DES选择的响应事件
+		rdbtnDes.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				symAlgs = "DES";
+			}
+		});
+		//增加AES选择的响应事件
+		rdbtnAes.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				symAlgs = "AES";
+			}
+		});
 		//对称加密的模式
 		JLabel label_1 = new JLabel("\u5BF9\u79F0\u52A0\u5BC6\u6A21\u5F0F\u9009\u62E9\uFF1A");
 		label_1.setFont(new Font("宋体", Font.PLAIN, 14));
@@ -109,35 +122,90 @@ public class MainUI {
 		setting.add(label_1);
 		//对称加密模式的选择
 		//CBC
-		JRadioButton rdbtnCbc = new JRadioButton("CBC");
+		JRadioButton rdbtnCbc = new JRadioButton("CBC", true);
 		rdbtnCbc.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnCbc.setBounds(10, 146, 52, 23);
 		setting.add(rdbtnCbc);
 		//CFB
-		JRadioButton rdbtnCfb = new JRadioButton("CFB");
+		JRadioButton rdbtnCfb = new JRadioButton("CFB", false);
 		rdbtnCfb.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnCfb.setBounds(66, 146, 52, 23);
 		setting.add(rdbtnCfb);
 		//OFB
-		JRadioButton rdbtnOfb = new JRadioButton("OFB");
+		JRadioButton rdbtnOfb = new JRadioButton("OFB", false);
 		rdbtnOfb.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnOfb.setBounds(120, 146, 52, 23);
 		setting.add(rdbtnOfb);
+		//加入到一个按钮组
+		ButtonGroup SymmetricMode = new ButtonGroup();
+		SymmetricMode.add(rdbtnCbc);
+		SymmetricMode.add(rdbtnCfb);
+		SymmetricMode.add(rdbtnOfb);
+		//增加CBC的响应时间
+		rdbtnCbc.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				symmode = "CBC";
+			}
+		});
+		//增加CFB的响应事件
+		rdbtnCfb.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				symmode = "CFB";
+			}
+		});
+		//增加OFB的响应事件
+		rdbtnOfb.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				symmode = "OFB";
+			}
+		});
+		
 		//信息摘要算法
 		JLabel label_2 = new JLabel("\u4FE1\u606F\u6458\u8981\u7B97\u6CD5\u9009\u62E9\uFF1A");
 		label_2.setFont(new Font("宋体", Font.PLAIN, 14));
 		label_2.setBounds(10, 179, 177, 35);
 		setting.add(label_2);
 		//SHA-1算法
-		JRadioButton rdbtnSha = new JRadioButton("SHA-1");
+		JRadioButton rdbtnSha = new JRadioButton("SHA-1", true);
 		rdbtnSha.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnSha.setBounds(10, 220, 71, 23);
 		setting.add(rdbtnSha);
 		//MD-5算法
-		JRadioButton rdbtnMd = new JRadioButton("MD5");
+		JRadioButton rdbtnMd = new JRadioButton("MD5", false);
 		rdbtnMd.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnMd.setBounds(91, 220, 52, 23);
 		setting.add(rdbtnMd);
+		//加入到一个按钮组
+		ButtonGroup shaAlgsGroup = new ButtonGroup();
+		shaAlgsGroup.add(rdbtnSha);
+		shaAlgsGroup.add(rdbtnMd);
+		//为sha增加响应
+		rdbtnSha.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				shaAlgs = "SHA-1";
+			}
+		});
+		//为md5增加响应
+		rdbtnMd.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				shaAlgs = "MD5";
+			}
+		});
 		//RSA算法长度的选择
 		JLabel lblRsa = new JLabel("RSA\u4F4D\u6570\uFF1A");
 		lblRsa.setFont(new Font("宋体", Font.PLAIN, 14));
