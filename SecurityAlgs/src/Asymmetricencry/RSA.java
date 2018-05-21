@@ -8,8 +8,8 @@ public class RSA {
    private final static BigInteger one      = new BigInteger("1");
    private final static SecureRandom random = new SecureRandom();
 
-   private BigInteger privateKey;
-   private BigInteger publicKey;
+   public BigInteger privateKey;
+   public BigInteger publicKey;
    private BigInteger modulus;
 
    // generate an N-bit (roughly) public and private key

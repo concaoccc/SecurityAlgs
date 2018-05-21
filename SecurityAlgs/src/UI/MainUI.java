@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -11,7 +12,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
-import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -21,11 +21,13 @@ import javax.swing.JComboBox;
 public class MainUI {
 
 	private JFrame frame;
-	private JTextField keyValue;
 	//保存对称加密算法
 	public String symAlgs = "DES";
 	public String symmode = "CBC";
 	public String shaAlgs = "SHA-1";
+	public String keySelect = "generate";
+	public String symKey = "";
+	public String RSALength = "200";
 	/**
 	 * Launch the application.
 	 */
@@ -33,7 +35,6 @@ public class MainUI {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			// TODO: handle exception
 			throw new RuntimeException(e);
 		}
 		EventQueue.invokeLater(new Runnable() {
@@ -64,7 +65,9 @@ public class MainUI {
 		frame.setBounds(100, 100, 800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		
+		//无法进行放大
+		frame.setResizable(false);
+
 		/*
 		 * 设置面板
 		 */
@@ -85,12 +88,12 @@ public class MainUI {
 		setting.add(lblNewLabel_2);		
 		//DES和AES的选择
 		//DES
-		JRadioButton rdbtnDes = new JRadioButton("DES", true);
+		final JRadioButton rdbtnDes = new JRadioButton("DES", true);
 		rdbtnDes.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnDes.setBounds(10, 76, 52, 23);
 		setting.add(rdbtnDes);
 		//AES
-		JRadioButton rdbtnAes = new JRadioButton("AES", false);
+		final JRadioButton rdbtnAes = new JRadioButton("AES", false);
 		rdbtnAes.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnAes.setBounds(91, 76, 52, 23);
 		setting.add(rdbtnAes);
@@ -103,7 +106,6 @@ public class MainUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				symAlgs = "DES";
 			}
 		});
@@ -111,7 +113,6 @@ public class MainUI {
 		rdbtnAes.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				symAlgs = "AES";
 			}
 		});
@@ -122,17 +123,17 @@ public class MainUI {
 		setting.add(label_1);
 		//对称加密模式的选择
 		//CBC
-		JRadioButton rdbtnCbc = new JRadioButton("CBC", true);
+		final JRadioButton rdbtnCbc = new JRadioButton("CBC", true);
 		rdbtnCbc.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnCbc.setBounds(10, 146, 52, 23);
 		setting.add(rdbtnCbc);
 		//CFB
-		JRadioButton rdbtnCfb = new JRadioButton("CFB", false);
+		final JRadioButton rdbtnCfb = new JRadioButton("CFB", false);
 		rdbtnCfb.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnCfb.setBounds(66, 146, 52, 23);
 		setting.add(rdbtnCfb);
 		//OFB
-		JRadioButton rdbtnOfb = new JRadioButton("OFB", false);
+		final JRadioButton rdbtnOfb = new JRadioButton("OFB", false);
 		rdbtnOfb.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnOfb.setBounds(120, 146, 52, 23);
 		setting.add(rdbtnOfb);
@@ -146,7 +147,6 @@ public class MainUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				symmode = "CBC";
 			}
 		});
@@ -155,7 +155,6 @@ public class MainUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				symmode = "CFB";
 			}
 		});
@@ -164,7 +163,6 @@ public class MainUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				symmode = "OFB";
 			}
 		});
@@ -175,12 +173,12 @@ public class MainUI {
 		label_2.setBounds(10, 179, 177, 35);
 		setting.add(label_2);
 		//SHA-1算法
-		JRadioButton rdbtnSha = new JRadioButton("SHA-1", true);
+		final JRadioButton rdbtnSha = new JRadioButton("SHA-1", true);
 		rdbtnSha.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnSha.setBounds(10, 220, 71, 23);
 		setting.add(rdbtnSha);
 		//MD-5算法
-		JRadioButton rdbtnMd = new JRadioButton("MD5", false);
+		final JRadioButton rdbtnMd = new JRadioButton("MD5", false);
 		rdbtnMd.setFont(new Font("宋体", Font.PLAIN, 14));
 		rdbtnMd.setBounds(91, 220, 52, 23);
 		setting.add(rdbtnMd);
@@ -193,7 +191,6 @@ public class MainUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				shaAlgs = "SHA-1";
 			}
 		});
@@ -202,58 +199,134 @@ public class MainUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				shaAlgs = "MD5";
 			}
 		});
 		//RSA算法长度的选择
 		JLabel lblRsa = new JLabel("RSA\u4F4D\u6570\uFF1A");
 		lblRsa.setFont(new Font("宋体", Font.PLAIN, 14));
-		lblRsa.setBounds(15, 261, 103, 35);
+		lblRsa.setBounds(10, 249, 103, 35);
 		setting.add(lblRsa);
 		
-		JComboBox RSALength = new JComboBox();
-		RSALength.setBounds(91, 268, 66, 21);
-		setting.add(RSALength);
-		
+		final String[] dataLeng= {"200", "512", "1024"};
+		final JComboBox RSALengthBox = new JComboBox(dataLeng);
+		RSALengthBox.setBounds(77, 256, 66, 21);
+		setting.add(RSALengthBox);
+		RSALengthBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int index = RSALengthBox.getSelectedIndex();
+				RSALength = dataLeng[index];
+			}
+		});
 		//秘钥的来源
 		JLabel label_3 = new JLabel("\u5BF9\u79F0\u79D8\u94A5\u6765\u6E90\u9009\u62E9\uFF1A");
 		label_3.setFont(new Font("宋体", Font.PLAIN, 14));
-		label_3.setBounds(10, 306, 177, 35);
+		label_3.setBounds(10, 287, 177, 35);
 		setting.add(label_3);
 		//秘钥随机生成
-		JRadioButton generate = new JRadioButton("\u81EA\u52A8\u751F\u6210");
+		final JRadioButton generate = new JRadioButton("\u81EA\u52A8\u751F\u6210", true);
 		generate.setFont(new Font("宋体", Font.PLAIN, 14));
-		generate.setBounds(15, 336, 91, 23);
+		generate.setBounds(10, 316, 91, 23);
 		setting.add(generate);
 		//秘钥输入
-		JRadioButton input = new JRadioButton("\u6587\u672C\u6846\u8F93\u5165");
+		final JRadioButton input = new JRadioButton("\u6587\u672C\u6846\u8F93\u5165", false);
 		input.setFont(new Font("宋体", Font.PLAIN, 14));
-		input.setBounds(15, 361, 103, 23);
+		input.setBounds(10, 344, 103, 23);
 		setting.add(input);
 		
-		keyValue = new JTextField();
-		keyValue.setBounds(10, 390, 160, 35);
-		setting.add(keyValue);
-		keyValue.setColumns(10);
+		JScrollPane srollKeyValue = new JScrollPane();
+		srollKeyValue.setBounds(10, 373, 160, 58);
+		setting.add(srollKeyValue);
+		final JTextArea keyValue = new JTextArea();
+		keyValue.setBounds(10, 373, 160, 58);
+		srollKeyValue.setViewportView(keyValue);
+		keyValue.setLineWrap(true);
+		keyValue.setEnabled(false);
 		
-		//保存按钮
-		JButton btnSave = new JButton("\u4FDD\u5B58");
-		btnSave.addActionListener(new ActionListener() {
+		//加入到一个按钮组
+		ButtonGroup RSASelectGroup = new ButtonGroup();
+		RSASelectGroup.add(generate);
+		RSASelectGroup.add(input);
+		//生成按钮响应
+		generate.addActionListener(new ActionListener() {
+			
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				keySelect = "generate";
+				keyValue.setText("");
+				keyValue.setEnabled(false);
 			}
 		});
+		//输入按钮响应
+		input.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				keySelect = "input";
+				keyValue.setEnabled(true);
+			}
+		});
+		
+		//保存按钮
+		final JButton btnSave = new JButton("\u4FDD\u5B58");
+		//修改按钮
+		final JButton btnChange = new JButton("\u4FEE\u6539");
+		//加密数据输入
+		final JTextArea textData = new JTextArea();
+		//确认加密按钮
+		final JButton btnEncry = new JButton("\u52A0\u5BC6");
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				rdbtnDes.setEnabled(false);
+				rdbtnAes.setEnabled(false);
+				rdbtnCbc.setEnabled(false);
+				rdbtnCfb.setEnabled(false);
+				rdbtnOfb.setEnabled(false);
+				rdbtnSha.setEnabled(false);
+				rdbtnMd.setEnabled(false);
+				generate.setEnabled(false);
+				input.setEnabled(false);
+				RSALengthBox.setEnabled(false);
+				keyValue.setEnabled(false);
+				btnSave.setEnabled(false);
+				textData.setEnabled(true);
+				btnEncry.setEnabled(true);
+				btnChange.setEnabled(true);
+				//TODO 检查是否有秘钥输入，如果没有要提示
+			}
+		});
+//		btnSave.setEnabled(false);
 		btnSave.setBounds(10, 446, 71, 23);
 		setting.add(btnSave);
-		//修改按钮
-		JButton btnChange = new JButton("\u4FEE\u6539");
+		
 		btnChange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				rdbtnDes.setEnabled(true);
+				rdbtnAes.setEnabled(true);
+				rdbtnCbc.setEnabled(true);
+				rdbtnCfb.setEnabled(true);
+				rdbtnOfb.setEnabled(true);
+				rdbtnSha.setEnabled(true);
+				rdbtnMd.setEnabled(true);
+				generate.setEnabled(true);
+				input.setEnabled(true);
+				RSALengthBox.setEnabled(true);
+				if (!keyValue.isEnabled())
+				{
+					keyValue.setEnabled(true);
+				}
+				btnSave.setEnabled(true);
+				textData.setEnabled(false);
+				btnEncry.setEnabled(false);
+				textData.setText("");
+				btnChange.setEnabled(false);
 			}
 		});
 		btnChange.setBounds(109, 446, 66, 23);
 		setting.add(btnChange);	
-		
+		btnChange.setEnabled(false);
 		/*
 		 * 发送数据面板
 		 */
@@ -268,10 +341,16 @@ public class MainUI {
 		label_4.setFont(new Font("宋体", Font.PLAIN, 20));
 		sendArea.add(label_4);
 		
+		JScrollPane scrolSend = new JScrollPane();
+		scrolSend.setBounds(10, 39, 249, 304);
+		sendArea.add(scrolSend);
 		JTextArea sendText = new JTextArea();
 		sendText.setBounds(10, 39, 249, 304);
-		sendArea.add(sendText);
-		
+		scrolSend.setViewportView(sendText);
+		sendText.setLineWrap(true);
+		//设置成只读
+		sendText.setEnabled(false);
+
 		/*
 		 * 接收数据面板
 		 */
@@ -281,15 +360,20 @@ public class MainUI {
 		receiveArea.setBounds(505, 10, 269, 353);
 		frame.getContentPane().add(receiveArea);
 		
-		JLabel label_5 = new JLabel("\u53D1\u9001\u65B9");
+		JLabel label_5 = new JLabel("\u63A5\u6536\u65B9");
 		label_5.setFont(new Font("宋体", Font.PLAIN, 20));
 		label_5.setBounds(94, 5, 60, 24);
 		receiveArea.add(label_5);
 		
+		JScrollPane scrolReceive = new JScrollPane();
+		scrolReceive.setBounds(10, 39, 249, 304);
+		receiveArea.add(scrolReceive);
 		JTextArea receiveText = new JTextArea();
 		receiveText.setBounds(10, 39, 249, 304);
-		receiveArea.add(receiveText);
-		
+		scrolReceive.setViewportView(receiveText);
+		receiveText.setLineWrap(true);
+		//设置成只读
+		receiveText.setEnabled(false);
 		/*
 		 * 输入数据
 		 */
@@ -305,13 +389,25 @@ public class MainUI {
 		lblNewLabel.setBounds(246, 5, 72, 21);
 		data.add(lblNewLabel);
 		
-		JTextArea textData = new JTextArea();
+		JScrollPane scrolData = new JScrollPane();
+		scrolData.setBounds(10, 30, 533, 107);
+		data.add(scrolData);
+		
 		textData.setBounds(10, 30, 533, 107);
-		data.add(textData);
-		//确认加密
-		JButton btnEncry = new JButton("\u52A0\u5BC6");
+		scrolData.setViewportView(textData);
+		textData.setLineWrap(true);
+		textData.setEnabled(false);
 		btnEncry.setFont(new Font("宋体", Font.PLAIN, 16));
 		btnEncry.setBounds(436, 147, 93, 23);
 		data.add(btnEncry);
+		btnEncry.setEnabled(false);
+		btnEncry.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO 检查是否有数据输入，如果没有要提醒
+				
+			}
+		});
 	}
 }
