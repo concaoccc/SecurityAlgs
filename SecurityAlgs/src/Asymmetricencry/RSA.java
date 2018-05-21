@@ -10,7 +10,7 @@ public class RSA {
 
    public BigInteger privateKey;
    public BigInteger publicKey;
-   private BigInteger modulus;
+   public BigInteger modulus;
 
    // generate an N-bit (roughly) public and private key
    public RSA(int N) {
