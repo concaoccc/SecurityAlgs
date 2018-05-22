@@ -35,6 +35,8 @@
 |           +-- AlgsCombTest.java
 |       +-- UI                                                           % swing实现的界面
 |           +-- MainUI.java
++-- release                                                             %最后的发行版文件
+|   +-- *.jar
 +-- homework requirement
 |   +-- homework.pdf                                                      % 作业要求
 ```
