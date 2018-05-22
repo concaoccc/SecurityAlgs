@@ -48,15 +48,15 @@ public class AlgsCombTest {
 	public static void CombTest()
 	{
 		AlgsComb test = new AlgsComb();
-		String symAlgs = "AES";
+		String symAlgs = "DES";
 		String symmode = "OFB";
 		String shaAlgs = "SHA-1";
 		String keySelect = "generate";
 		String symKey = "";
 		String RSALength = "200";
-		String data = "caocongcong zhen de hao shuai!!!!!!!!!!!!!!!!";
 		test.changeParm(symAlgs,symmode, shaAlgs, keySelect, symKey, RSALength);
 		test.initKey();
+		String data = "hgjhgjyiuipoi;jkjhguyftgdtretrda";
 		byte[] tmp = test.encodeProcess(data);
 		boolean result = test.decodeProcess(tmp);
 		if(result)

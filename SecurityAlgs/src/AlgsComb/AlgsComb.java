@@ -2,12 +2,8 @@ package AlgsComb;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import javax.swing.text.JTextComponent.KeyBinding;
-
 import Asymmetricencry.RSA;
 import Hash.MD5;
-import Hash.SHA;
 import SymmetricEncry.AES;
 import SymmetricEncry.DES;
 
@@ -32,14 +28,20 @@ public class AlgsComb {
 	private RSA keyA;
 	private RSA keyB;
 	//记录数据补全的数据
-	int moreByte;
+	int moreByte = 0;
 	//加密后秘钥的长度
-	int EntryKeyLength;
+	int EntryKeyLength = 0;
 	//原始数据长度
-	int PrimaryDatalength;
+	int PrimaryDatalength = 0;
+	//需要显示的一些变量
+	StringBuilder sendInfo;
+	StringBuilder receInfo;
+	byte[] decryKey;
 	//初始化函数
 	public AlgsComb() {
 		// TODO Auto-generated constructor stub
+		sendInfo = new StringBuilder();
+		receInfo = new StringBuilder();
 	}
 	// 修改参数
 	public void changeParm(String symAlgs, String symmode, String shaAlgs, String keySelect, String symKey, String RSALength)
@@ -118,6 +120,13 @@ public class AlgsComb {
 		//生成HASH
 		byte[] shaData;
 		byte[] primary = data.getBytes();
+		sendInfo.append("原始数据:\n");
+		sendInfo.append(data+"\n");
+		System.out.println("原始数据");
+		for (int i = 0; i < primary.length; i++) {
+			System.out.print(primary[i]+" ");
+		}
+		System.out.println();
 		if (shaAlgs == "SHA-1")
 		{
 			MessageDigest sh = null;
@@ -135,45 +144,77 @@ public class AlgsComb {
 		else {
 			shaData =  new MD5().getMD5(primary);
 		}
+		sendInfo.append("原文摘要:\n");
+		sendInfo.append(byte2StringDex(shaData)+"\n");
 		//用自己的私钥进行签名
 		byte[] signature = keyA.encrypt(shaData);
-		PrimaryDatalength = data.length();
+		PrimaryDatalength = primary.length;
+		sendInfo.append("私钥签名:\n");
+		sendInfo.append(byte2StringDex(signature)+"\n");
 		//将签名加到最后
 		byte[] signaturedData = byteMerger(data.getBytes(), signature);
-//		System.out.println("签名数据比较:");
-//		for (int i = 0; i < signaturedData.length; i++) {
-//			System.out.print(signaturedData[i]+" ");
-//		}
+		System.out.println("未对称加密的数据长度:"+signaturedData.length);
+		for (int i = 0; i < signaturedData.length; i++) {
+			System.out.print(signaturedData[i]+" ");
+		}
+		System.out.println();
 		//对签名和原始数据进行加密
 		byte[] EncrySinaturedData = SymEncry(signaturedData);
+		System.out.println("对称加密后数据长度"+EncrySinaturedData.length);
+		for (int i = 0; i < EncrySinaturedData.length; i++) {
+			System.out.print(EncrySinaturedData[i]+" ");
+		}
+		System.out.println();
 		byte[] EncryKey = keyB.encrypt(symKeyByte);
+		sendInfo.append("被加密的秘钥:\n");
+		sendInfo.append(byte2StringDex(EncryKey)+"\n");
 		EntryKeyLength = EncryKey.length;
 		byte[] result = byteMerger(EncrySinaturedData, EncryKey);
-		
+//		System.out.println("最后的数据:");
+//		for (int i = 0; i < result.length; i++) {
+//			System.out.print(result[i]+" ");
+//		}
+//		System.out.println();
+		sendInfo.append("最终发送数据:\n");
+		sendInfo.append(byte2StringDex(result));
 		return result;
 	}
 	
 	//用户B的操作
 	public boolean decodeProcess(byte[] encryData)
 	{
-		//首先划分出加密后的秘钥
 		byte[] encryKey = getEncryKey(encryData, EntryKeyLength);
 		byte[] UsedKey = keyB.decrypt(encryKey);
+		decryKey = UsedKey;
 		byte[] EncrySinaturedData = new byte[encryData.length - EntryKeyLength];
 		for (int i = 0; i < encryData.length - EntryKeyLength; i++) {
 			EncrySinaturedData[i] = encryData[i];
 		}
+		System.out.println("加密数据长度"+EncrySinaturedData.length);
+		for (int i = 0; i < EncrySinaturedData.length; i++) {
+			System.out.print(EncrySinaturedData[i]+" ");
+		}
+		System.out.println();
 		byte[] SinaturedData = SymDecry(EncrySinaturedData);
+		System.out.println("对称解密后的数据长度:"+SinaturedData.length);
+		for (int i = 0; i < SinaturedData.length; i++) {
+			System.out.print(SinaturedData[i]+" ");
+		}
+		System.out.println();
 		byte[] primaryData = new byte[PrimaryDatalength];
 		for (int i = 0; i < primaryData.length; i++) {
 			primaryData[i] = SinaturedData[i];
 		}
+		receInfo.append("解密得到的原文:\n");
+		receInfo.append(new String(primaryData)+"\n");
 		byte[] EncrySignature = new byte[SinaturedData.length - PrimaryDatalength];
 		for (int i = 0; i < EncrySignature.length; i++) {
 			EncrySignature[i] = SinaturedData[PrimaryDatalength+i];
 		}
 		
 		byte[] signature = keyA.decrypt(EncrySignature);
+		receInfo.append("解密得到的摘要:\n");
+		receInfo.append(byte2StringDex(signature)+"\n");
 		byte[] shaData;
 		if (shaAlgs == "SHA-1")
 		{
@@ -192,12 +233,21 @@ public class AlgsComb {
 		else {
 			shaData =  new MD5().getMD5(primaryData);
 		}
+		receInfo.append("计算得到的摘要:\n");
+		receInfo.append(byte2StringDex(shaData)+"\n");
+		System.out.println("解密后的原始数据");
+		for (int i = 0; i < primaryData.length; i++) {
+			System.out.print(primaryData[i]+" ");
+		}
+		System.out.println();
 		for (int i = 0; i < shaData.length; i++) {
 			if(signature[i] != shaData[i])
 			{
+				receInfo.append("摘要信息比对失败\n");
 				return false;
 			}
 		}
+		receInfo.append("摘要信息比对成功\n");
 		return true;	
 	}
 	
@@ -321,10 +371,15 @@ public class AlgsComb {
 				  if (symmode == "CBC")
 				  {
 					  byte[] tmpInput = tmpData;
-					  byte[] tmpResult = des.encry(tmpInput, symKeyByte);
+					  byte[] tmpResult = des.decry(tmpInput, symKeyByte);
 					  byte[] tmpDecry = XOR(tmpResult, tmpIV);
 					  tmpIV = tmpInput;
 					  decryText = byteMerger(decryText, tmpDecry);
+//					  byte[] tmpInput = tmpData;
+//					  byte[] tmpResult = test.decrypt(tmpInput);
+//					  byte[] tmpDecry = XOR(tmpResult, tmpIV);
+//					  tmpIV = tmpInput;
+//					  decryText = byteMerger(decryText, tmpDecry);
 				  }
 				  else if(symmode == "CFB")
 				  {
@@ -448,6 +503,50 @@ public class AlgsComb {
 		System.out.println(privateKeyB);
 		System.out.println("对称秘钥:");
 		System.out.println(new String(symKeyByte));
+	}
+	
+	public String byte2StringDex(byte[] data)
+	{
+		StringBuilder sb = new StringBuilder(data.length * 2);
+		   for(byte b: data)
+		      sb.append(String.format("%02x", b));
+		   return sb.toString();
+	}
+	
+	//产生秘钥阶段发送方应该显示的信息
+	public String ininKeySendInfo()
+	{
+		StringBuilder tmpBuilder = new StringBuilder();
+		tmpBuilder.append("发送方的公钥:\n");
+		tmpBuilder.append(publicKeyA+"\n");
+		tmpBuilder.append("发送方私钥:\n");
+		tmpBuilder.append(privateKeyA+"\n");
+		tmpBuilder.append("对称加密算法为"+symAlgs+"\n");
+		tmpBuilder.append("摘要算法为"+shaAlgs+"\n");
+		tmpBuilder.append("对称秘钥为："+byte2StringDex(symKeyByte));
+		return tmpBuilder.toString();
+	}
+	
+	//产生秘钥阶段接收方应该显示的信息
+	public String initKeyReceInfo()
+	{
+		StringBuilder tmpBuilder = new StringBuilder();
+		tmpBuilder.append("接收方的公钥:\n");
+		tmpBuilder.append(publicKeyB+"\n");
+		tmpBuilder.append("接收方私钥:\n");
+		tmpBuilder.append(privateKeyB+"\n");
+		return tmpBuilder.toString();
+	}
+	
+	//加解密阶段发送方应该显示的信息
+	public String SendInfo()
+	{
+		return sendInfo.toString();
+	}
+	//加解密阶段接收方应该显示的信息
+	public String receInfo()
+	{
+		return receInfo.toString();
 	}
 	/**
 	 * @param args

@@ -1,6 +1,5 @@
 package UI;
 
-import java.awt.EventQueue;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
@@ -10,7 +9,6 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JRadioButton;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -18,9 +16,11 @@ import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 
+import AlgsComb.AlgsComb;
+
 public class MainUI {
 
-	private JFrame frame;
+	public JFrame frame;
 	//保存对称加密算法
 	public String symAlgs = "DES";
 	public String symmode = "CBC";
@@ -28,32 +28,23 @@ public class MainUI {
 	public String keySelect = "generate";
 	public String symKey = "";
 	public String RSALength = "200";
+	
+	//最后实际使用的算法集合
+	private AlgsComb algsUesd;
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MainUI window = new MainUI();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		
 	}
 
 	/**
 	 * Create the application.
 	 */
 	public MainUI() {
+		algsUesd = new AlgsComb();
 		initialize();
+		
 	}
 
 	/**
@@ -277,53 +268,10 @@ public class MainUI {
 		final JTextArea textData = new JTextArea();
 		//确认加密按钮
 		final JButton btnEncry = new JButton("\u52A0\u5BC6");
-		btnSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				rdbtnDes.setEnabled(false);
-				rdbtnAes.setEnabled(false);
-				rdbtnCbc.setEnabled(false);
-				rdbtnCfb.setEnabled(false);
-				rdbtnOfb.setEnabled(false);
-				rdbtnSha.setEnabled(false);
-				rdbtnMd.setEnabled(false);
-				generate.setEnabled(false);
-				input.setEnabled(false);
-				RSALengthBox.setEnabled(false);
-				keyValue.setEnabled(false);
-				btnSave.setEnabled(false);
-				textData.setEnabled(true);
-				btnEncry.setEnabled(true);
-				btnChange.setEnabled(true);
-				//TODO 检查是否有秘钥输入，如果没有要提示
-			}
-		});
+		
 //		btnSave.setEnabled(false);
 		btnSave.setBounds(10, 446, 71, 23);
 		setting.add(btnSave);
-		
-		btnChange.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				rdbtnDes.setEnabled(true);
-				rdbtnAes.setEnabled(true);
-				rdbtnCbc.setEnabled(true);
-				rdbtnCfb.setEnabled(true);
-				rdbtnOfb.setEnabled(true);
-				rdbtnSha.setEnabled(true);
-				rdbtnMd.setEnabled(true);
-				generate.setEnabled(true);
-				input.setEnabled(true);
-				RSALengthBox.setEnabled(true);
-				if (!keyValue.isEnabled())
-				{
-					keyValue.setEnabled(true);
-				}
-				btnSave.setEnabled(true);
-				textData.setEnabled(false);
-				btnEncry.setEnabled(false);
-				textData.setText("");
-				btnChange.setEnabled(false);
-			}
-		});
 		btnChange.setBounds(109, 446, 66, 23);
 		setting.add(btnChange);	
 		btnChange.setEnabled(false);
@@ -344,7 +292,7 @@ public class MainUI {
 		JScrollPane scrolSend = new JScrollPane();
 		scrolSend.setBounds(10, 39, 249, 304);
 		sendArea.add(scrolSend);
-		JTextArea sendText = new JTextArea();
+		final JTextArea sendText = new JTextArea();
 		sendText.setBounds(10, 39, 249, 304);
 		scrolSend.setViewportView(sendText);
 		sendText.setLineWrap(true);
@@ -368,7 +316,7 @@ public class MainUI {
 		JScrollPane scrolReceive = new JScrollPane();
 		scrolReceive.setBounds(10, 39, 249, 304);
 		receiveArea.add(scrolReceive);
-		JTextArea receiveText = new JTextArea();
+		final JTextArea receiveText = new JTextArea();
 		receiveText.setBounds(10, 39, 249, 304);
 		scrolReceive.setViewportView(receiveText);
 		receiveText.setLineWrap(true);
@@ -401,11 +349,76 @@ public class MainUI {
 		btnEncry.setBounds(436, 147, 93, 23);
 		data.add(btnEncry);
 		btnEncry.setEnabled(false);
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//TODO 检查是否有秘钥输入，如果没有要提示
+				rdbtnDes.setEnabled(false);
+				rdbtnAes.setEnabled(false);
+				rdbtnCbc.setEnabled(false);
+				rdbtnCfb.setEnabled(false);
+				rdbtnOfb.setEnabled(false);
+				rdbtnSha.setEnabled(false);
+				rdbtnMd.setEnabled(false);
+				generate.setEnabled(false);
+				input.setEnabled(false);
+				RSALengthBox.setEnabled(false);
+				keyValue.setEnabled(false);
+				btnSave.setEnabled(false);
+				//修改参数并产生秘钥后才能修改秘钥或者输入数据
+				algsUesd.changeParm(symAlgs, symmode, shaAlgs, keySelect, symKey, RSALength);
+				algsUesd.initKey();
+				sendText.append(algsUesd.ininKeySendInfo());
+				receiveText.append(algsUesd.initKeyReceInfo());
+				btnEncry.setEnabled(true);
+				textData.setEnabled(true);
+				btnChange.setEnabled(true);
+			}
+		});
+		btnChange.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				rdbtnDes.setEnabled(true);
+				rdbtnAes.setEnabled(true);
+				rdbtnCbc.setEnabled(true);
+				rdbtnCfb.setEnabled(true);
+				rdbtnOfb.setEnabled(true);
+				rdbtnSha.setEnabled(true);
+				rdbtnMd.setEnabled(true);
+				generate.setEnabled(true);
+				input.setEnabled(true);
+				RSALengthBox.setEnabled(true);
+				if (!keyValue.isEnabled())
+				{
+					keyValue.setEnabled(true);
+				}
+				btnSave.setEnabled(true);
+				textData.setEnabled(false);
+				btnEncry.setEnabled(false);
+				//清空加密数据
+				textData.setText("");
+				//清空发送区域
+				sendText.setText("");
+				//清空接收区域
+				receiveText.setText("");
+				btnChange.setEnabled(false);
+			}
+		});
 		btnEncry.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO 检查是否有数据输入，如果没有要提醒
+				String data = textData.getText();
+				byte[] tmp = algsUesd.encodeProcess(data);
+				sendText.append(algsUesd.SendInfo());
+				boolean result = algsUesd.decodeProcess(tmp);
+				receiveText.append(algsUesd.receInfo());
+				if(result)
+				{
+					System.out.println("解密成功");
+				}
+				else {
+					System.out.println("解密失败");
+				}
 				
 			}
 		});
