@@ -11,23 +11,28 @@
 |   +-- .classpath
 |   +-- .project
 |   +-- src
+|       +-- AlgsComb                                                     %算法组合，完成作业框图
+|            +-- AlgsComb.java
 |       +-- Asymmetricencry                                               % 非对称加密
 |            +-- RSA.java                
 |       +-- Hash                                                          % 摘要
 |            +-- MD5.java                 
-|            +-- SHA.java                
+|            +-- SHA.java 
+|       +-- Main                                                          %入口函数
+|           +-- Main.java     
 |       +-- SymmetricEncry                                                % 对称加密
 |           +-- AES.java                  
 |           +-- DES.java                  
 |           +-- DESCore.java              
 |           +-- util.java
-|       +-- Test%                                                         % 测试
+|       +-- Test                                                          % 测试
 |           +-- AESTest.java
 |           +-- DESCoreTest.java
 |           +-- DESTest.java
 |           +-- MD5Test.java
 |           +-- SHATest.java
 |           +-- RSATest.java
+<<<<<<< HEAD
       %算法框图
 |           +-- AlgsComb.java
       %图形化界面
@@ -35,10 +40,18 @@
       %入口函数
 |           +-- Main.java
 |
+=======
+|           +-- AlgsCombTest.java
+|       +-- UI                                                           % swing实现的界面
+|           +-- MainUI.java
++-- release                                                             %最后的发行版文件
+|   +-- *.jar
+>>>>>>> 899558ecef7e90210654bbbf8bd67fa05d09c8e1
 +-- homework requirement
 |   +-- homework.pdf                                                      % 作业要求
 ```
 # 核心代码说明
+<<<<<<< HEAD
 ### Main(入口函数)
 - Main.java
 
@@ -49,6 +62,11 @@
 
 ### AlgsComb(算法框图的实现)
 - AlgsComb
+=======
+### AlgsComb(算法组合，实现框图)
+- AlgsComb.java
+  利用密码学算法接口实现整体的框图流程
+>>>>>>> 899558ecef7e90210654bbbf8bd67fa05d09c8e1
 ### SymmetricEncry(对称加密)
 - DESCore.java 
   
@@ -73,6 +91,10 @@ MD5算法实现，对于任意长度的字符串生成16*8bit的摘要，参考[
 - SHA.java
 
 SHA-1算法实现，对于任意长度的string生成长度位20*8bit的摘要
+### Main(入口)
+- Main.java
+整体项目的接口
+
 ### Test(对加密代码进行测试)
 - DESCoreTest.java
 
@@ -93,7 +115,13 @@ SHA-1算法实现，对于任意长度的string生成长度位20*8bit的摘要
 
 任意生成一组数据，利用RSA进行加密和解密操作
 
+<<<<<<< HEAD
 -
+=======
+### UI(界面)
+- MainUI.java
+整体的界面
+>>>>>>> 899558ecef7e90210654bbbf8bd67fa05d09c8e1
 # 密码学算法API
 - DES
 ```java
@@ -156,3 +184,8 @@ SHA sha = new SHA(data.getBytes());
 //得到计算结果
 byte[] result = sha.getSHA();
 ```
+# 不足与展望
+- sha-1算法没能正确实现，使用的系统提供的
+- 界面比较简陋，固定大小，只实现了基础工程
+- 类的设计有问题，比如对称密钥以及sha没有统一接口
+- 算法组合的时候逻辑混乱，只是实现了基础功能
