@@ -28,10 +28,27 @@
 |           +-- MD5Test.java
 |           +-- SHATest.java
 |           +-- RSATest.java
+      %算法框图
+|           +-- AlgsComb.java
+      %图形化界面
+|           +-- MainUI.java
+      %入口函数
+|           +-- Main.java
+|
 +-- homework requirement
 |   +-- homework.pdf                                                      % 作业要求
 ```
 # 核心代码说明
+### Main(入口函数)
+- Main.java
+
+工程的入口函数，调用即可生成最后界面
+
+### UI(图形化界面)
+- MainUI.java
+
+### AlgsComb(算法框图的实现)
+- AlgsComb
 ### SymmetricEncry(对称加密)
 - DESCore.java 
   
@@ -75,6 +92,8 @@ SHA-1算法实现，对于任意长度的string生成长度位20*8bit的摘要
 - RSATest.java
 
 任意生成一组数据，利用RSA进行加密和解密操作
+
+-
 # 密码学算法API
 - DES
 ```java
