@@ -31,22 +31,16 @@
 |           +-- DESTest.java
 |           +-- MD5Test.java
 |           +-- SHATest.java
-|           +-- RSATest.java
-<<<<<<< HEAD
-      %算法框图
-|           +-- AlgsComb.java
-      %图形化界面
-|           +-- MainUI.java
-      %入口函数
-|           +-- Main.java
+|           +-- RSATest.java                                           
+|           +-- AlgsComb.java                                            %算法框图
+|           +-- MainUI.java                                                 %图形化界面
+|           +-- Main.java                                                      %入口函数
 |
-=======
 |           +-- AlgsCombTest.java
 |       +-- UI                                                           % swing实现的界面
 |           +-- MainUI.java
 +-- release                                                             %最后的发行版文件
 |   +-- *.jar
->>>>>>> 899558ecef7e90210654bbbf8bd67fa05d09c8e1
 +-- homework requirement
 |   +-- homework.pdf                                                      % 作业要求
 ```
@@ -62,11 +56,9 @@
 
 ### AlgsComb(算法框图的实现)
 - AlgsComb
-=======
 ### AlgsComb(算法组合，实现框图)
 - AlgsComb.java
   利用密码学算法接口实现整体的框图流程
->>>>>>> 899558ecef7e90210654bbbf8bd67fa05d09c8e1
 ### SymmetricEncry(对称加密)
 - DESCore.java 
   
@@ -115,13 +107,11 @@ SHA-1算法实现，对于任意长度的string生成长度位20*8bit的摘要
 
 任意生成一组数据，利用RSA进行加密和解密操作
 
-<<<<<<< HEAD
 -
 =======
 ### UI(界面)
 - MainUI.java
 整体的界面
->>>>>>> 899558ecef7e90210654bbbf8bd67fa05d09c8e1
 # 密码学算法API
 - DES
 ```java
